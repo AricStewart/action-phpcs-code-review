@@ -42,9 +42,29 @@ if [[ $phpcsfilefound -ne 0 ]]; then
     fi
 fi
 
-/usr/games/cowsay "Running with the flag $phpcs_standard"
+echo "Running with the flag $phpcs_standard\n\n"
 
 echo "Running the following command"
+echo "ARIC: GITHUB_SHA:"
+echo "$GITHUB_SHA"
+echo "`git whatchanged -n 1 $GITHUB_SHA`"
+echo "$GITHUB_REF"
+echo "$GITHUB_HEAD_REF"
+echo "$GITHUB_BASE_REF"
+echo "`git log origin/$GITHUB_BASE_REF..origin/$GITHUB_HEAD_REF`"
+TARGET=`git log -n 1 --pretty=format:%H --no-merges $GITHUB_SHA`;
+echo "New: $TARGET";
+echo "`git branch --contains $TARGET`";
+echo "OLD: $GITHUB_SHA";
+echo "`git branch --contains $GITHUB_SHA`";
+echo "now: `git branch`";
+echo ""
+echo "---- Adjusting the branch ---"
+echo "git checkout -b $GITHUB_HEAD_REF origin/$GITHUB_HEAD_REF"
+# gosu rtbot bash -c "git checkout -b $GITHUB_HEAD_REF origin/$GITHUB_HEAD_REF"
+TARGET=`git log -n 1 --pretty=format:%H --no-merges origin/$GITHUB_HEAD_REF`;
+echo "TARGET=$TARGET";
+echo ""
+echo "---- Attempting command ---"
 echo "/home/rtbot/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner=$GITHUB_REPO_OWNER --repo-name=$GITHUB_REPO_NAME --commit=$GITHUB_SHA --token=\$GH_BOT_TOKEN --phpcs-path=/home/rtbot/vip-go-ci-tools/phpcs/bin/phpcs --local-git-repo=/home/rtbot/github-workspace --phpcs=true $phpcs_standard --lint=true"
-
 gosu rtbot bash -c "/home/rtbot/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner=$GITHUB_REPO_OWNER --repo-name=$GITHUB_REPO_NAME --commit=$GITHUB_SHA --token=$GH_BOT_TOKEN --phpcs-path=/home/rtbot/vip-go-ci-tools/phpcs/bin/phpcs --local-git-repo=/home/rtbot/github-workspace --phpcs=true $phpcs_standard --lint=true"
